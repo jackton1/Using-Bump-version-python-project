@@ -26,10 +26,12 @@ else
   if [[ "$PROJECT_NAME" && "$WORKSPACE_DIR" ]];then
      CURRENT_VERSION=$(sed -n "s/version='//1p" "$WORKSPACE_DIR/setup.py" | sed -n "s/',//1p" | xargs) 
      CONFIG_FILE="$HOME/.bumpversion$PROJECT_NAME.cfg"
+     SCRIPT_DIR=`dirname "$BASH_SOURCE"`
      echo "Current version $CURRENT_VERSION"
      echo "Project name is $PROJECT_NAME"
-     echo "Workspace $WORKSPACE_DIR" 
-     sed "s/VERSION/$CURRENT_VERSION/g;s/WORKSPACE/${WORKSPACE_DIR//\//\\/}/g" ~/.bumpversiontemplate.cfg  > "$CONFIG_FILE"
+     echo "Workspace $WORKSPACE_DIR"
+     echo "Script directory $SCRIPT_DIR"
+     sed "s/VERSION/$CURRENT_VERSION/g;s/WORKSPACE/${WORKSPACE_DIR//\//\\/}/g" "${SCRIPT_DIR}/.bumpversiontemplate.cfg"  > "$CONFIG_FILE"
      echo "bumpversion —-config-file $CONFIG_FILE $PART" 
      bumpversion --config-file "$CONFIG_FILE"  "$PART" --verbose
      rm "$CONFIG_FILE"
