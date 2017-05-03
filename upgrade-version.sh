@@ -5,7 +5,7 @@ WORKSPACE_DIR=$4
 ARGS=$3
 
 if [[ "$#" < 3 ]]; then
-   echo "\nUsage projectname part(major|minor|patch) [-t|-m]"
+   echo "\nUsage projectname part(major|minor|patch) [-t|-m] Optional [WORKSPACE_PATH]"
    echo "\t-t : Test Run"
    echo "\t-m : Main Run"
 else
