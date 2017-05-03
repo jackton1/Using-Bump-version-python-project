@@ -9,7 +9,7 @@ if [[ "$#" < 3 ]]; then
    echo "-t : Test Run"
    echo "-m: Main Run"
 else
-  if [ "$ARGS" != "-t" || "$ARGS" != "-m"] then
+  if [ "$ARGS" != "-t" || "$ARGS" != "-m"]; then
       echo "Invalid arguments used. specify either options [-t|-m]"
   fi
   
