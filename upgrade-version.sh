@@ -1,11 +1,18 @@
 #!/bin/sh
 PROJECT_NAME=$1
 PART=$2
-WORKSPACE_DIR=$3
+WORKSPACE_DIR=$4
+ARGS = $3
 
-if [[ "$#" < 2 ]]; then
-   echo "Please provide a project name and part(major|minor|patch)."	 
+if [[ "$#" < 3 ]]; then
+   echo "Usage projectname part(major|minor|patch) [-t|-m]"
+   echo "-t : Test Run"
+   echo "-m: Main Run"
 else
+  if [ "$ARGS" != "-t" || "$ARGS" != "-m"] then
+      echo "Invalid arguments used. specify either options [-t|-m]"
+  fi
+  
   if [[ -z "$WORKSPACE_DIR" ]]; then
       WORKSPACE_DIR="$HOME/workspace/$PROJECT_NAME"
   fi
@@ -33,7 +40,7 @@ else
      echo "Script directory $SCRIPT_DIR"
      sed "s/VERSION/$CURRENT_VERSION/g;s/WORKSPACE/${WORKSPACE_DIR//\//\\/}/g" "${SCRIPT_DIR}/.bumpversiontemplate.cfg"  > "$CONFIG_FILE"
      echo "bumpversion —-config-file $CONFIG_FILE $PART" 
-     bumpversion --config-file "$CONFIG_FILE"  "$PART" --verbose
+     bumpversion --config-file "$CONFIG_FILE"  "$PART" --verbose "$ARGS"
      rm "$CONFIG_FILE"
   fi
 fi
