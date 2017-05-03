@@ -5,12 +5,16 @@ WORKSPACE_DIR=$4
 ARGS=$3
 
 if [[ "$#" < 3 ]]; then
-   echo "Usage projectname part(major|minor|patch) [-t|-m]"
-   echo "-t : Test Run"
-   echo "-m: Main Run"
+   echo "\nUsage projectname part(major|minor|patch) [-t|-m]"
+   echo "\t-t : Test Run"
+   echo "\t-m : Main Run"
 else
   if [ "$ARGS" != "-t" || "$ARGS" != "-m"]; then
       echo "Invalid arguments used. specify either options [-t|-m]"
+  elif [ "$ARGS" == "-t" ]; then
+      ARGS="--dry-run"
+  else
+     ARGS="--list" 
   fi
   
   if [[ -z "$WORKSPACE_DIR" ]]; then
