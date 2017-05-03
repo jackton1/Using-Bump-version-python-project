@@ -1,7 +1,6 @@
 #!/bin/sh
 PROJECT_NAME=$1
 PART=$2
-WORKSPACE_DIR=$4
 ARGS=$3
 
 if [[ "$#" < 3 ]]; then
@@ -17,9 +16,7 @@ else
       ARGS="--list"
   fi
   
-  if [[ -z "$WORKSPACE_DIR" ]]; then
-      WORKSPACE_DIR="$HOME/workspace/$PROJECT_NAME"
-  fi
+  WORKSPACE_DIR=${4:-"$HOME/workspace/$PROJECT_NAME"}
 
   if [[ ! -d "$WORKSPACE_DIR" ]]; then
      echo "No workspace directory exist in path $WORKSPACE_DIR"
