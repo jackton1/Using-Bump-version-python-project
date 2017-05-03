@@ -2,7 +2,7 @@
 PROJECT_NAME=$1
 PART=$2
 WORKSPACE_DIR=$4
-ARGS = $3
+ARGS=$3
 
 if [[ "$#" < 3 ]]; then
    echo "Usage projectname part(major|minor|patch) [-t|-m]"
