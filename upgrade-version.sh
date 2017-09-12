@@ -1,50 +1,89 @@
-#!/bin/sh
-PROJECT_NAME=$1
-PART=$2
-WORKSPACE_DIR=$4
-ARGS=$3
+#!/usr/bin/env bash
 
-if [[ "$#" < 3 ]]; then
-   echo "\nUsage projectname part(major|minor|patch) [-t|-m] Optional [WORKSPACE_PATH]"
-   echo "\t-t : Test Run"
-   echo "\t-m : Main Run"
-else
-  if [ "$ARGS" != "-t" || "$ARGS" != "-m"]; then
-      echo "Invalid arguments used. specify either options [-t|-m]"
-  elif [ "$ARGS" == "-t" ]; then
-      ARGS="--dry-run"
-  elif [ "$ARGS" == "-m" ]; then
-      ARGS="--list"
+usage(){
+    echo "usage: upgrade-version.sh [-p](major|minor|patch)
+       [-t|-m] [-r] [-w] WORKSPACE_PATH [-c] CONFIG_FILE PROJECT_NAME"
+    echo "optional arguments: "
+    echo "      -h : Displays the help message."
+    echo "      -t : Perform a test run without upgrading the project version."
+    echo "      -m : Perform an actual run changing the project version."
+    echo "      -w : Path to Workspace directory"
+    echo "      -c : Path the config file"
+    echo "      -r : Remove config file after run."
+    exit 0
+}
+
+if [[ $# -lt 4 ]]; then
+    usage
+fi
+
+while getopts 'tmrhp:c:w:v' flag; do
+      case "${flag}" in
+        t) ARGS="--dry-run";;
+        h) usage ;;
+        p) PART=${OPTARG} ;;
+        r) REMOVE_CONFIG='yes' ;;
+        m) ARGS="--list" ;;
+        c) CONFIG_FILE="${OPTARG:-''}" ;;
+        w) WORKSPACE_DIR="${OPTARG:-$HOME/workspace/$PROJECT_NAME}" ;;
+        *) usage;;
+      esac
+ done
+PROJECT_NAME="${@:${#@}}"
+WORKSPACE_DIR="${WORKSPACE_DIR:-$HOME/workspace/$PROJECT_NAME}"
+
+increase_version (){
+
+  if [[ ! -z "$PART" ]]; then
+    case "${PART}" in
+        minor|major|patch) echo "Changing $PART version.";;
+        *) echo "Invalid version part specified (major|minor|patch)."; return 1;;
+    esac
   fi
-  
-  if [[ -z "$WORKSPACE_DIR" ]]; then
-      WORKSPACE_DIR="$HOME/workspace/$PROJECT_NAME"
+
+  echo "Project name: $PROJECT_NAME"
+  echo "Workspace dir: $WORKSPACE_DIR"
+  if [[ ! -z "$CONFIG_FILE" && ! -f "$CONFIG_FILE" ]]; then
+    echo "Config file doesn't exists specify path to config file with [-c] [CONFIG_FILE]"
+    exit 1
   fi
 
   if [[ ! -d "$WORKSPACE_DIR" ]]; then
-     echo "No workspace directory exist in path $WORKSPACE_DIR"
-  else 
-     if [ ! -f "$WORKSPACE_DIR/setup.py" ]; then 
-       echo "setup.py file not found in $WORKSPACE_DIR"
+     echo "No workspace directory exist at path $WORKSPACE_DIR"
+  else
+     SETUP_FILE=$(find "$WORKSPACE_DIR" -type f -name 'setup.py')
+     if [[ -z ${SETUP_FILE} || ! -f ${SETUP_FILE} ]]; then
+       echo "setup.py file not found at $SETUP_FILE"
        echo "Checking mainline directory"
        WORKSPACE_DIR="$HOME/workspace/$PROJECT_NAME/mainline"
-       if [ ! -f "$WORKSPACE_DIR/setup.py" ]; then
-          echo "Could not find the setup.py in $WORKSPACE_DIR" 
+       SETUP_FILE=$(find "$WORKSPACE_DIR" -type f -name 'setup.py')
+       if [[ -z ${SETUP_FILE} || ! -f ${SETUP_FILE} ]]; then
+          echo "Could not find the setup.py in $SETUP_FILE"
           exit 0
        fi
-     fi 
+     else
+        echo "Found setup file at $SETUP_FILE"
+     fi
   fi
-  if [[ "$PROJECT_NAME" && "$WORKSPACE_DIR" ]];then
-     CURRENT_VERSION=$(sed -n "s/version='//1p" "$WORKSPACE_DIR/setup.py" | sed -n "s/',//1p" | xargs) 
-     CONFIG_FILE="$HOME/.bumpversion$PROJECT_NAME.cfg"
-     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-     echo "Current version $CURRENT_VERSION"
-     echo "Project name is $PROJECT_NAME"
-     echo "Workspace $WORKSPACE_DIR"
-     echo "Script directory $SCRIPT_DIR $ABSOLUTE_PATH"
-     sed "s/VERSION/$CURRENT_VERSION/g;s/WORKSPACE/${WORKSPACE_DIR//\//\\/}/g" "${SCRIPT_DIR}/.bumpversiontemplate.cfg"  > "$CONFIG_FILE"
-     echo "bumpversion —-config-file $CONFIG_FILE $PART" 
-     bumpversion --config-file "$CONFIG_FILE"  "$PART" --verbose "$ARGS"
-     rm "$CONFIG_FILE"
+
+  if [[ ! -z "$PROJECT_NAME" && -d "$WORKSPACE_DIR" ]];then
+     echo "Starting bumpversion..."
+     CURRENT_VERSION=$(sed -n "s/version=//p" "$WORKSPACE_DIR/setup.py" | sed -n "s/[',]*//gp" | xargs)
+     CONFIG_FILE="${CONFIG_FILE:-$HOME/.bumpversion-$PROJECT_NAME.cfg}"
+     echo "Current version: $CURRENT_VERSION"
+     echo "Workspace:  $WORKSPACE_DIR"
+     if [[ ! -z ${CONFIG_FILE} && ! -f ${CONFIG_FILE} && ${CURRENT_VERSION} ]]; then
+        SOURCE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+        sed "s/VERSION/$CURRENT_VERSION/g;s/WORKSPACE/${WORKSPACE_DIR//\//\\/}/g" "${SOURCE}/.bumpversiontemplate.cfg"  > "$CONFIG_FILE"
+     fi
+     echo "bumpversion —-config-file $CONFIG_FILE $PART"
+     bumpversion --allow-dirty --config-file "$CONFIG_FILE"  "$PART" --verbose "$ARGS"
   fi
-fi
+
+  if [[ ! -z ${REMOVE_CONFIG} && 'yes' ==  ${REMOVE_CONFIG} ]]; then
+    rm ${CONFIG_FILE}
+  fi
+
+}
+
+increase_version

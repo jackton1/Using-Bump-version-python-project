@@ -15,21 +15,21 @@ A Shell script to use python package bumpversion to modify version of setup.py a
 
 ### Optional ```~/path/to/project```
 #### Test run
-```./upgrade-version.sh test-project minor -t ~/path/to/project```
+```upgrade-version.sh -p minor -t /path/to/project```
 #### Main run
-```./upgrade-version.sh test-project minor -m ~/path/to/project```
+```upgrade-version.sh -p minor -m /path/to/project```
 
 
 
 
-## Boiler Plate config template
+## Generated config file.
 
 ```cfg
 [bumpversion]
-current_version = VERSION
+current_version = 1.1.1
 commit = True
 tag = False
 message = "Increased version: {current_version} to {new_version}"
 
-[bumpversion:file:WORKSPACE/setup.py]
+[bumpversion:file:/path/to/project/setup.py]
 ```
