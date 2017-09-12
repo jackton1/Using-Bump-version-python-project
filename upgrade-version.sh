@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+PROJECT_NAME=''
 usage(){
     echo "usage: upgrade-version.sh [-p](major|minor|patch)
        [-t|-m] [-r] [-w] WORKSPACE_PATH [-c] CONFIG_FILE PROJECT_NAME"
@@ -29,8 +29,13 @@ while getopts 'tmrhp:c:w:v' flag; do
         *) usage;;
       esac
  done
-PROJECT_NAME="${@:${#@}}"
-WORKSPACE_DIR="${WORKSPACE_DIR:-$HOME/workspace/$PROJECT_NAME}"
+
+if [[ -z ${PROJECT_NAME} && ! -z ${WORKSPACE_DIR} ]]; then
+    PROJECT_NAME=$(basename "$WORKSPACE_DIR")
+else
+    PROJECT_NAME="${@:${#@}}"
+    WORKSPACE_DIR="$HOME/workspace/$PROJECT_NAME"
+fi
 
 increase_version (){
 

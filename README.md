@@ -1,22 +1,35 @@
-# Using [bumpversion](https://pypi.python.org/pypi/bumpversion) in python project
-A Shell script to use python package bumpversion to modify version of setup.py and create a commit  
+# Using [bumpversion](https://pypi.python.org/pypi/bumpversion) in your python project
+A Shell script to use python package [bumpversion](https://pypi.python.org/pypi/bumpversion) to modify project version.
+ This changes the setup.py file and creates a commit on the current VCS (ie. Mecurail/Git).
+
+The script provides a detailed output of the files changed
+and the expected commit message which can be modified by changing the
+`.bumpversiontemplate.cfg` file.
 
 
-### Changes the version with the part(major|minor|patch)
-#### patch 
-```1.1.1. -> 1.1.2```
+### Increases the project version according to the part(major|minor|patch)
+#### patch
+```1.1.1. --> 1.1.2```
 #### minor
-```1.1.1. -> 1.2.0```
-#### major 
-```1.1.1. -> 2.0.0```
+```1.1.1. --> 1.2.0```
+#### major
+```1.1.1. --> 2.0.0```
 
 
-## Usage
+## Installation:
 
-### Optional ```~/path/to/project```
-#### Test run
+#### Download or clone the repository.
+
+## Usage:
+### View Help Text using the ``-h`` option.
+```upgrade-version.sh -h```
+
+#### also pass an optional argument using the ``-w`` option and ```~/path/to/project```
+```upgrade-version.sh -p minor -t -w /path/to/project```
+
+#### Perform a test run
 ```upgrade-version.sh -p minor -t /path/to/project```
-#### Main run
+#### Perform an actual version change run
 ```upgrade-version.sh -p minor -m /path/to/project```
 
 
