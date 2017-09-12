@@ -16,7 +16,7 @@ and the expected commit message which can be modified by changing the
 ```1.1.1. --> 2.0.0```
 
 
-## Installation:
+## Installation with `upgrade-version.sh`
 
 #### Download or clone the repository.
 
@@ -33,6 +33,25 @@ and the expected commit message which can be modified by changing the
 ```upgrade-version.sh -p minor -m /path/to/project```
 
 
+## Installation with `increase-version-bash.sh`
+
+#### Repeat installation step above.
+#### Add the `increase-version-bash.sh` script to your ~/.bash_profile
+```export PATH="/path/to/increase-version-bash.sh:${PATH}"```
+##### OR run
+```source /path/to/increase-version-bash.sh```
+
+## Usage `(Similar usage to above)`:
+### View Help Text using.
+```increase_version -h```
+
+#### also pass an optional argument using the ``-w`` option and ```~/path/to/project```
+```increase_version -p minor -t -w /path/to/project```
+
+#### Perform a test run
+```increase_version -p minor -t /path/to/project```
+#### Perform an actual version change run
+```increase_version -p minor -m /path/to/project```
 
 
 ## Generated config file.
