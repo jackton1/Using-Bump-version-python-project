@@ -1,44 +1,47 @@
-#!/usr/bin/env bash
-PROJECT_NAME=''
-usage(){
-    echo "usage: upgrade-version.sh [-p](major|minor|patch)
-       [-t|-m] [-r] [-w] WORKSPACE_PATH [-c] CONFIG_FILE PROJECT_NAME"
-    echo "optional arguments: "
-    echo "      -h : Displays the help message."
-    echo "      -t : Perform a test run without upgrading the project version."
-    echo "      -m : Perform an actual run changing the project version."
-    echo "      -w : Path to Workspace directory"
-    echo "      -c : Path the config file"
-    echo "      -r : Remove config file after run."
-    exit 0
-}
-
-if [[ $# -lt 4 ]]; then
-    usage
-fi
-
-while getopts 'tmrhp:c:w:v' flag; do
-      case "${flag}" in
-        t) ARGS="--dry-run";;
-        h) usage ;;
-        p) PART=${OPTARG} ;;
-        r) REMOVE_CONFIG='yes' ;;
-        m) ARGS="--list" ;;
-        c) CONFIG_FILE="${OPTARG:-''}" ;;
-        w) WORKSPACE_DIR="${OPTARG:-$HOME/workspace/$PROJECT_NAME}" ;;
-        *) usage;;
-      esac
- done
-
-if [[ -z ${PROJECT_NAME} && ! -z ${WORKSPACE_DIR} ]]; then
-    PROJECT_NAME=$(basename "$WORKSPACE_DIR")
-else
-    PROJECT_NAME="${@:${#@}}"
-    WORKSPACE_DIR="$HOME/workspace/$PROJECT_NAME"
-fi
+#!/bin/bash
 
 increase_version (){
+    WORKSPACE_DIR=''
+    PROJECT_NAME=''
+    SETUP_FILE=''
+    CONFIG_FILE=''
+    PART=''
+    REMOVE_CONFIG=''
+    ARGS=''
+    usage(){
+        echo "usage: upgrade-version.sh [-p](major|minor|patch)
+           [-t|-m] [-r] [-w] WORKSPACE_PATH [-c] CONFIG_FILE PROJECT_NAME"
+        echo "optional arguments: "
+        echo "      -h : Displays the help message."
+        echo " -t | -m : Perform a test run without changes or actual run upgrading the project version."
+        echo "      -w : Path to Workspace directory"
+        echo "      -c : Path the config file"
+        echo "      -r : Remove config file after run."
+    }
 
+    if [[ $# -lt 4 ]]; then
+        usage
+        return 0
+    fi
+
+    while getopts 'tmrhp:c:w:v' flag; do
+          case "${flag}" in
+            t) ARGS="--dry-run";;
+            h) usage ;;
+            p) PART=${OPTARG} ;;
+            r) REMOVE_CONFIG='yes' ;;
+            m) ARGS="--list" ;;
+            c) CONFIG_FILE="${OPTARG:-''}" ;;
+            w) WORKSPACE_DIR="${OPTARG:-$HOME/workspace/$PROJECT_NAME}" ;;
+            *) usage;;
+          esac
+     done
+  if [[ -z ${PROJECT_NAME} && ! -z ${WORKSPACE_DIR} ]]; then
+    PROJECT_NAME=$(basename "$WORKSPACE_DIR")
+  else
+    PROJECT_NAME="${@:${#@}}"
+    WORKSPACE_DIR="$HOME/workspace/$PROJECT_NAME"
+  fi
   if [[ ! -z "$PART" ]]; then
     case "${PART}" in
         minor|major|patch) echo "Changing $PART version.";;
@@ -50,7 +53,7 @@ increase_version (){
   echo "Workspace dir: $WORKSPACE_DIR"
   if [[ ! -z "$CONFIG_FILE" && ! -f "$CONFIG_FILE" ]]; then
     echo "Config file doesn't exists specify path to config file with [-c] [CONFIG_FILE]"
-    exit 1
+    return 1
   fi
 
   if [[ ! -d "$WORKSPACE_DIR" ]]; then
@@ -64,7 +67,7 @@ increase_version (){
        SETUP_FILE=$(find "$WORKSPACE_DIR" -type f -name 'setup.py')
        if [[ -z ${SETUP_FILE} || ! -f ${SETUP_FILE} ]]; then
           echo "Could not find the setup.py in $SETUP_FILE"
-          exit 0
+          return 1
        fi
      else
         echo "Found setup file at $SETUP_FILE"
@@ -83,12 +86,11 @@ increase_version (){
      fi
      echo "bumpversion —-config-file $CONFIG_FILE $PART"
      bumpversion --allow-dirty --config-file "$CONFIG_FILE"  "$PART" --verbose "$ARGS"
-  fi
+     if [[ ! -z ${REMOVE_CONFIG} && 'yes' ==  ${REMOVE_CONFIG} ]]; then
+        rm ${CONFIG_FILE}
+     fi
 
-  if [[ ! -z ${REMOVE_CONFIG} && 'yes' ==  ${REMOVE_CONFIG} ]]; then
-    rm ${CONFIG_FILE}
   fi
-
 }
 
 increase_version
