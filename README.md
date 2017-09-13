@@ -22,7 +22,7 @@ and the expected commit message which can be modified by changing the
 
 ##### Run ``chmod +x /path/to/increase-version.sh``
 
-##### Add line to ``~/.bashrc``
+##### Add line to ``~/.bashrc`` or ``~/.zshrc``
 ```alias increase_version=/path/to/increase-version.sh```
 
 #### OR
