@@ -19,7 +19,7 @@ and the expected commit message which can be modified by changing the
 ## Installation:
 
 #### Download or clone the repository.
-##### Run
+##### Add line to ``~/.bashrc``
 
 ```alias increase_version=/path/to/increase-version.sh```
 
