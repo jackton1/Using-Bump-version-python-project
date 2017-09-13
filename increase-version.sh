@@ -9,13 +9,13 @@ increase_version (){
     REMOVE_CONFIG=''
     ARGS=''
     usage(){
-        echo "usage: upgrade-version.sh [-p](major|minor|patch)
-           [-t|-m] [-r] [-w] WORKSPACE_PATH [-c] CONFIG_FILE PROJECT_NAME"
+        echo "usage: increase_version [-p](major|minor|patch)
+           [-t | -m] [-r] [-w] WORKSPACE_PATH [-c] CONFIG_FILE PROJECT_NAME"
         echo "optional arguments: "
         echo "      -h : Displays the help message."
-        echo " -t | -m : Perform a test run without changes or actual run upgrading the project version."
-        echo "      -w : Path to Workspace directory"
-        echo "      -c : Path the config file"
+        echo " -t | -m : Performs a test run without changes or actual run upgrading the project version."
+        echo "      -w : Specify path to workspace directory"
+        echo "      -c : Specify path to the config file"
         echo "      -r : Remove config file after run."
     }
 
@@ -81,8 +81,15 @@ increase_version (){
      echo "Current version: $CURRENT_VERSION"
      echo "Workspace:  $WORKSPACE_DIR"
      if [[ ! -z ${CONFIG_FILE} && ! -f ${CONFIG_FILE} && ${CURRENT_VERSION} ]]; then
-        SOURCE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-        sed "s/VERSION/$CURRENT_VERSION/g;s/WORKSPACE/${WORKSPACE_DIR//\//\\/}/g" "${SOURCE}/.bumpversiontemplate.cfg"  > "$CONFIG_FILE"
+        SOURCE_TEMPLATE=$(find $HOME -name ".bumpversiontemplate.cfg" 2>/dev/null)
+        if [ -z "$SOURCE_TEMPLATE" ]; then
+            echo "Cannot find source config template file .bumpversiontemplate.cfg"
+            return 1
+        else
+            sed "s/VERSION/$CURRENT_VERSION/g;s/WORKSPACE/${WORKSPACE_DIR//\//\\/}/g" "${SOURCE_TEMPLATE}"  > "$CONFIG_FILE"
+        fi
+     else
+        sed "s/.*current_version =.*/current_version = $CURRENT_VERSION/" "$CONFIG_FILE"
      fi
      echo "bumpversion —-config-file $CONFIG_FILE $PART"
      bumpversion --allow-dirty --config-file "$CONFIG_FILE"  "$PART" --verbose "$ARGS"
@@ -93,4 +100,4 @@ increase_version (){
   fi
 }
 
-increase_version
+[[ $0 != "$BASH_SOURCE" ]] || increase_version

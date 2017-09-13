@@ -16,45 +16,36 @@ and the expected commit message which can be modified by changing the
 ```1.1.1. --> 2.0.0```
 
 
-## Installation with `upgrade-version.sh`
+## Installation:
 
 #### Download or clone the repository.
+##### Run
+
+```alias increase_version=/path/to/increase-version.sh```
+
+#### OR
+
+ ```source /path/to/increase-version.sh```
 
 ## Usage:
-### View Help Text using the ``-h`` option.
-```upgrade-version.sh -h```
-
-#### also pass an optional argument using the ``-w`` option and ```~/path/to/project```
-```upgrade-version.sh -p minor -t -w /path/to/project```
-
-#### Perform a test run
-```upgrade-version.sh -p minor -t /path/to/project```
-#### Perform an actual version change run
-```upgrade-version.sh -p minor -m /path/to/project```
-
-
-## Installation with `increase-version-bash.sh`
-
-#### Repeat installation step above.
-#### Add the `increase-version-bash.sh` script to your ~/.bash_profile
-```export PATH="/path/to/increase-version-bash.sh:${PATH}"```
-##### OR run
-```source /path/to/increase-version-bash.sh```
-
-## Usage `(Similar usage to above)`:
-### View Help Text using.
+#### View Help Text
 ```increase_version -h```
 
-#### also pass an optional argument using the ``-w`` option and ```~/path/to/project```
+#### Optionally argument project workspace path
+using the ``-w`` option and ```~/path/to/project```.
+
 ```increase_version -p minor -t -w /path/to/project```
 
-#### Perform a test run
-```increase_version -p minor -t /path/to/project```
+#### Perform a test run with the project name.
+```increase_version -p minor -t project_name```
 #### Perform an actual version change run
-```increase_version -p minor -m /path/to/project```
+```increase_version -p minor -m project_name```
+
+#### Delete the generated config template after run using the ``-r``
+```increase_version -p minor -r -m project_name```
 
 
-## Generated config file.
+## Generated sample config file.
 
 ```cfg
 [bumpversion]
@@ -63,5 +54,5 @@ commit = True
 tag = False
 message = "Increased version: {current_version} to {new_version}"
 
-[bumpversion:file:/path/to/project/setup.py]
+[bumpversion:file:test_project/setup.py]
 ```
