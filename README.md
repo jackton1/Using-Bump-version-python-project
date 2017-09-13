@@ -41,7 +41,7 @@ using the ``-w`` option and ```~/path/to/project```.
 #### Perform an actual version change run
 ```increase_version -p minor -m project_name```
 
-#### Delete the generated config template after run using the ``-r``
+#### Delete the generated config template after run using the ``-r`` option.
 ```increase_version -p minor -r -m project_name```
 
 
