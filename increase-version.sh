@@ -11,6 +11,18 @@ increase_version (){
     GET_VERSION=
     VERBOSE=
 
+    unset WORKSPACE_DIR
+    unset PROJECT_NAME
+    unset SETUP_FILE
+    unset CONFIG_FILE
+    unset PART
+    unset REMOVE_CONFIG
+    unset ARGS
+    unset GET_VERSION
+    unset VERBOSE
+    unset CURRENT_VERSION
+    unset ARGS
+
     version() {
         echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }';
     }
