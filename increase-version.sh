@@ -132,4 +132,4 @@ increase_version (){
   fi
 }
 
-[[ $0 != "$BASH_SOURCE" ]] || increase_version
+[[ $0 != "$BASH_SOURCE" ]] || increase_version $@
