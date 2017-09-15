@@ -50,6 +50,7 @@ increase_version (){
             return 0
         fi
     fi
+  [ $(pip show bumpversion | wc -c) -ne 0 ] || pip install --upgrade bumpversion --quiet
   if [[ -z ${PROJECT_NAME} && ! -z ${WORKSPACE_DIR} ]]; then
     PROJECT_NAME=$(basename "$WORKSPACE_DIR")
   else
