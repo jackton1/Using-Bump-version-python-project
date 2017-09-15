@@ -28,15 +28,15 @@ increase_version (){
     }
 
     usage(){
-        echo "usage: increase_version [-p](major|minor|patch)
-           [-t | -m] [-r] [-w] WORKSPACE_PATH [-c] CONFIG_FILE PROJECT_NAME"
+        echo "usage: increase_version [-p](major|minor|patch) [-t|-m]
+                     [-vr] [-w] WORKSPACE_PATH [-c] CONFIG_FILE PROJECT_NAME"
         echo "optional arguments: "
         echo "      -h : Displays the help message."
-        echo " -t | -m : Performs a test run without changes or actual run upgrading the project version."
+        echo "      -t : Performs a test run without changes uses -v by default."
+        echo "      -m : Perform an actual run upgrading the project version. Best run with -v"
         echo "      -w : Specify path to workspace directory"
         echo "      -c : Specify path to the config file"
         echo "      -r : Remove config file after run."
-        echo "      -v : Print useful information to stderr."
         echo "      -g : Get the project current version. 'increase_version -g PROJECT_NAME' "
     }
 
