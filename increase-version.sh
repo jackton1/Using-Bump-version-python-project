@@ -124,11 +124,12 @@ increase_version (){
             mv "$CONFIG_FILE.new" "$CONFIG_FILE"
         fi
      fi
+     cd ${WORKSPACE_DIR}
      bumpversion --allow-dirty --config-file "$CONFIG_FILE"  "$PART" --verbose "$ARGS"
      if [[ ! -z ${REMOVE_CONFIG} && 'yes' ==  ${REMOVE_CONFIG} ]]; then
         rm ${CONFIG_FILE}
      fi
-
+     cd ${OLDPWD}
   fi
 }
 
