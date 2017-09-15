@@ -10,6 +10,7 @@ increase_version (){
     REMOVE_CONFIG=
     ARGS=
     GET_VERSION=
+    TEMPDIR=
 
     version() {
         echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }';
@@ -30,14 +31,14 @@ increase_version (){
     while getopts 'tmrghp:c:w:v' flag; do
           case "${flag}" in
             t) ARGS="--dry-run";;
-            h) usage ;;
+            h) usage; return 0 ;;
             p) PART=${OPTARG} ;;
             r) REMOVE_CONFIG='yes' ;;
             g) GET_VERSION=1 ;;
             m) ARGS="--list" ;;
             c) CONFIG_FILE="${OPTARG:-''}" ;;
             w) WORKSPACE_DIR="${OPTARG:-$HOME/workspace/$PROJECT_NAME}" ;;
-            *) usage;;
+            *) usage; return 0 ;;
           esac
      done
 
@@ -73,17 +74,18 @@ increase_version (){
   if [[ ! -d "$WORKSPACE_DIR" ]]; then
      echo "No workspace directory exist at path $WORKSPACE_DIR"
   else
+     MAINLINE_DIR="$WORKSPACE_DIR/mainline"
      SETUP_FILE=$(find "$WORKSPACE_DIR" -type f -name 'setup.py')
-     if [[ -z ${SETUP_FILE} || ! -f ${SETUP_FILE} ]]; then
-       echo "setup.py file not found at $SETUP_FILE"
-       echo "Checking mainline directory"
-       WORKSPACE_DIR="$HOME/workspace/$PROJECT_NAME/mainline"
-       SETUP_FILE=$(find "$WORKSPACE_DIR" -type f -name 'setup.py')
-       if [[ -z ${SETUP_FILE} || ! -f ${SETUP_FILE} ]]; then
-          echo "Could not find the setup.py in $SETUP_FILE"
+     if [[ $? -ne 0 ]]; then
+       echo "No setup.py file not found in: $WORKSPACE_DIR"
+       echo "Checking mainline directory : $MAINLINE_DIR"
+       SETUP_FILE=$(find "$MAINLINE_DIR" -type f -name 'setup.py')
+       if [[ $? -ne 0 ]]; then
+          echo "Cannot find setup.py file in $WORKSPACE_DIR or $MAINLINE_DIR."
           return 1
        fi
      else
+        WORKSPACE_DIR=`dirname ${SETUP_FILE}`
         echo "Found setup file at $SETUP_FILE"
      fi
   fi
@@ -103,10 +105,19 @@ increase_version (){
   if [[ ! -z "$PROJECT_NAME" && -d "$WORKSPACE_DIR" ]];then
      echo "Starting bumpversion..."
      CURRENT_VERSION=$(sed -n "s/version=//p" "$WORKSPACE_DIR/setup.py" | sed -n "s/[',]*//gp" | xargs)
-     CONFIG_FILE="${CONFIG_FILE:-$HOME/.bumpversion-$PROJECT_NAME.cfg}"
+
+     if [ -z ${CONFIG_FILE} ]; then
+        TEMPDIR=`mktemp -d -t version_config`
+        if [ $? -ne 0 ]; then
+           echo "Can't create temp dir, specify config file path using -c option. exiting..."
+           return 1
+        else
+            CONFIG_FILE="$TEMPDIR/.bumpversion-$PROJECT_NAME.cfg"
+        fi
+     fi
      echo "Current version: $CURRENT_VERSION"
      echo "Workspace:  $WORKSPACE_DIR"
-     
+
 
      if [[ ! -z ${CONFIG_FILE} && ! -z ${CURRENT_VERSION} ]]; then
         WORD_COUNT=$(wc -c <"$CONFIG_FILE")
@@ -128,9 +139,17 @@ increase_version (){
      cd ${WORKSPACE_DIR}
      bumpversion --allow-dirty --config-file "$CONFIG_FILE"  "$PART" --verbose "$ARGS"
      if [[ ! -z ${REMOVE_CONFIG} && 'yes' ==  ${REMOVE_CONFIG} ]]; then
+        echo "Cleaning up"
         rm ${CONFIG_FILE}
+     else
+        mv ${CONFIG_FILE} ~
      fi
      cd ${OLDPWD}
+
+     if [ ! -z  ${TEMPDIR}  ]; then
+        echo "Cleaning up..."
+        rm -f ${TEMPDIR}
+     fi
   fi
 }
 
