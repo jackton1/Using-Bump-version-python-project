@@ -24,7 +24,7 @@ increase_version (){
     unset ARGS
 
     version() {
-        echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }';
+        echo "$@" | awk -F. '{ if($1 <= 0) $1=$1+1; printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }';
     }
 
     usage(){
@@ -152,13 +152,21 @@ increase_version (){
                 sed "s/VERSION/$CURRENT_VERSION/g;s/PROJECT_NAME/$PROJECT_NAME/g;s/WORKSPACE/${WORKSPACE_DIR//\//\\/}/g" "${SOURCE_TEMPLATE}"  > "$CONFIG_FILE"
             fi
         else
-            echo "Updating the current version to $CURRENT_VERSION"
-            sed "s/.*current_version =.*/current_version = $CURRENT_VERSION/" "$CONFIG_FILE" > "$CONFIG_FILE.new"
-            mv "$CONFIG_FILE.new" "$CONFIG_FILE"
+            CONFIG_VERSION=$(sed -n "s/current_version =//1p" "$CONFIG_FILE")
+            if [[ $(version ${CONFIG_VERSION}) -gt $(version ${CURRENT_VERSION}) || $(version ${CONFIG_VERSION}) -lt $(version ${CURRENT_VERSION}) ]];then
+                echo "Updating the current version to $CURRENT_VERSION"
+                sed "s/.*current_version =.*/current_version = $CURRENT_VERSION/" "$CONFIG_FILE" > "$CONFIG_FILE.new"
+                mv "$CONFIG_FILE.new" "$CONFIG_FILE"
+            fi
         fi
      fi
      cd "$WORKSPACE_DIR"
-     bumpversion --allow-dirty "$VERBOSE" "$ARGS" --config-file "$CONFIG_FILE"  "$PART"
+     echo "Increasing version..."
+     if [ -z "$VERBOSE" ]; then
+        bumpversion "--allow-dirty" "${ARGS}" "--config-file" "$CONFIG_FILE" "${PART}" "$SETUP_FILE"
+     else
+        bumpversion "--allow-dirty" "${ARGS}" "--config-file" "$CONFIG_FILE" "${PART}" "$SETUP_FILE" "$VERBOSE"
+     fi
 
      if [[ ! -z ${REMOVE_CONFIG} &&  ${REMOVE_CONFIG} -eq 'yes' ]]; then
         echo "Cleaning up $CONFIG_FILE."
