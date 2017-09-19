@@ -146,6 +146,7 @@ increase_version (){
             SOURCE_TEMPLATE=$(find $HOME -name ".bumpversiontemplate.cfg" 2>/dev/null)
             if [ -z ${SOURCE_TEMPLATE} ]; then
                 echo "Cannot find source config template file .bumpversiontemplate.cfg"
+                echo "Check file prefix '.'"
                 return 1
             else
                 sed "s/VERSION/$CURRENT_VERSION/g;s/PROJECT_NAME/$PROJECT_NAME/g;s/WORKSPACE/${WORKSPACE_DIR//\//\\/}/g" "${SOURCE_TEMPLATE}"  > "$CONFIG_FILE"
