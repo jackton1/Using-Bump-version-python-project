@@ -120,7 +120,7 @@ increase_version (){
   if [[ ! -z "$PROJECT_NAME" && -d "$WORKSPACE_DIR" ]];then
      echo "Starting bumpversion..."
      CURRENT_VERSION=$(sed -n "s/.*version=//p" "$WORKSPACE_DIR/setup.py" | sed -n "s/[',\"]*//gp" | xargs)
-     SEPARATOR=$(sed -n "s/.*version=//p" "$WORKSPACE_DIR/setup.py" | cut -d . -f 1 | cut -c 1 | xargs)
+     SEPARATOR=$(sed -n "s/.*version=//p" "$WORKSPACE_DIR/setup.py" | cut -d . -f 1 | cut -c 1 )
      if [ -z ${CONFIG_FILE} ]; then
         echo "Getting config file..."
         CONFIG_FILE="$HOME/.bumpversion-${PROJECT_NAME}.cfg"
