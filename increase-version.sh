@@ -76,7 +76,7 @@ increase_version (){
         *) echo "Invalid version part specified: (major|minor|patch)."; return 1;;
     esac
   fi
-
+  SEPARATOR="'"
 
   if [[ ! -z "$CONFIG_FILE" && ! -f "$CONFIG_FILE" ]]; then
     echo "Config file doesn't exists specify path to config file with [-c] [CONFIG_FILE]"
@@ -120,7 +120,7 @@ increase_version (){
   if [[ ! -z "$PROJECT_NAME" && -d "$WORKSPACE_DIR" ]];then
      echo "Starting bumpversion..."
      CURRENT_VERSION=$(sed -n "s/.*version=//p" "$WORKSPACE_DIR/setup.py" | sed -n "s/[',\"]*//gp" | xargs)
-
+     SEPARATOR=$(sed -n "s/.*version=//p" "$WORKSPACE_DIR/setup.py" | cut -d . -f 1 | cut -c 1 | xargs)
      if [ -z ${CONFIG_FILE} ]; then
         echo "Getting config file..."
         CONFIG_FILE="$HOME/.bumpversion-${PROJECT_NAME}.cfg"
@@ -138,6 +138,7 @@ increase_version (){
      fi
      echo "Current version: $CURRENT_VERSION"
      echo "Workspace:  $WORKSPACE_DIR"
+     echo "Separator: $SEPARATOR"
 
      [ $(which bumpversion | wc -c) -ne 0 ] || pip install --upgrade bumpversion --quiet
      if [[ ! -z ${CONFIG_FILE} && ! -z ${CURRENT_VERSION} ]]; then
@@ -149,13 +150,13 @@ increase_version (){
                 echo "Check file prefix '.'"
                 return 1
             else
-                sed "s/VERSION/$CURRENT_VERSION/g;s/PROJECT_NAME/$PROJECT_NAME/g;s/WORKSPACE/${WORKSPACE_DIR//\//\\/}/g" "${SOURCE_TEMPLATE}"  > "$CONFIG_FILE"
+                sed "s/VERSION/$CURRENT_VERSION/g;s/SEP/$SEPARATOR/g;s/PROJECT_NAME/$PROJECT_NAME/g;s/WORKSPACE/${WORKSPACE_DIR//\//\\/}/g" "${SOURCE_TEMPLATE}"  > "$CONFIG_FILE"
             fi
         else
             CONFIG_VERSION=$(sed -n "s/current_version =//1p" "$CONFIG_FILE")
             if [[ $(version ${CONFIG_VERSION}) -gt $(version ${CURRENT_VERSION}) || $(version ${CONFIG_VERSION}) -lt $(version ${CURRENT_VERSION}) ]];then
                 echo "Updating the current version to $CURRENT_VERSION"
-                sed "s/.*current_version =.*/current_version = $CURRENT_VERSION/" "$CONFIG_FILE" > "$CONFIG_FILE.new"
+                sed "s/.*current_version =.*/current_version = $CURRENT_VERSION/;s/.*SEP.*/part:$SEPARATOR/" "$CONFIG_FILE" > "$CONFIG_FILE.new"
                 mv "$CONFIG_FILE.new" "$CONFIG_FILE"
             fi
         fi
