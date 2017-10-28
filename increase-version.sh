@@ -1,15 +1,6 @@
 #!/bin/bash
 
 increase_version (){
-    WORKSPACE_DIR=
-    PROJECT_NAME=
-    SETUP_FILE=
-    CONFIG_FILE=
-    PART=
-    REMOVE_CONFIG=
-    ARGS=
-    GET_VERSION=
-    VERBOSE=
 
     unset WORKSPACE_DIR
     unset PROJECT_NAME
@@ -21,7 +12,6 @@ increase_version (){
     unset GET_VERSION
     unset VERBOSE
     unset CURRENT_VERSION
-    unset ARGS
 
     version() {
         echo "$@" | awk -F. '{ if($1 <= 0) $1=$1+1; printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }';
@@ -29,7 +19,7 @@ increase_version (){
 
     usage(){
         echo "usage: increase_version [-p](major|minor|patch) [-t|-m]
-                     [-vr] [-w] WORKSPACE_PATH [-c] CONFIG_FILE PROJECT_NAME"
+                     [-vr] [-w] WORKSPACE_DIR [-c] CONFIG_FILE PROJECT_NAME"
         echo "optional arguments: "
         echo "      -h : Displays the help message."
         echo "      -t : Performs a test run without changes uses -v by default."
