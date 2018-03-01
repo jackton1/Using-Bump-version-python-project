@@ -22,7 +22,7 @@ increase_version (){
                   increase_version [-p](major|minor|patch) [-t|-m] [-vhr] [-w] WORKSPACE_DIR [-c] CONFIG_FILE PROJECT_NAME
                   increase_version -g PROJECT_NAME
               "
-        echo "optional arguments: "
+        echo "options: "
         echo "      -p : Specify the version part to bump i.e (minor| major| patch)."
         echo "      -t : Performs a test run without changes shows a verbose output by default."
         echo "      -m : Perform an actual run bumping the project version. Run with -v for more information."
