@@ -120,16 +120,16 @@ increase_version (){
      SEPARATOR=$(sed -n "s/.*version=//p" "$WORKSPACE_DIR/setup.py" | cut -d . -f 1 | cut -c 1 )
      if [ -z ${CONFIG_FILE} ]; then
         echo "Getting config file..."
-        CONFIG_FILE="$HOME/.bumpversion-${PROJECT_NAME}.cfg"
+        CONFIG_FILE="$WORKSPACE_DIR/.bumpversion.cfg"
         if [ ! -f ${CONFIG_FILE} ]; then
-            echo "Cant find config file in $HOME directory."
+            echo "Cant find config file in $WORKSPACE_DIR directory."
             echo "Creating temp directory"
             TEMPDIR=`mktemp -d -t version_config`
             if [ $? -ne 0 ]; then
                echo "Can't create temp dir, specify config file path using -c option. exiting..."
                return 1
             else
-                CONFIG_FILE="$TEMPDIR/.bumpversion-$PROJECT_NAME.cfg"
+                CONFIG_FILE="$TEMPDIR/.bumpversion.cfg"
             fi
         fi
      fi
@@ -137,7 +137,12 @@ increase_version (){
      echo "Workspace:  $WORKSPACE_DIR"
      echo "Separator: $SEPARATOR"
 
-     [ $(which bumpversion | wc -c) -ne 0 ] || pip install --upgrade bumpversion --quiet
+     BUMPVERSION=`which bumpversion`
+     if [ $? -ne 0 ]; then
+        echo "No bumpversion package found. Installing bumpversion..."
+        pip install --upgrade bumpversion --quiet
+     fi
+
      if [[ ! -z ${CONFIG_FILE} && ! -z ${CURRENT_VERSION} ]]; then
         if [[ ! -f  ${CONFIG_FILE} ||  $(wc -c <"$CONFIG_FILE") -lt 160 ]]; then
             echo "Generating config file Please wait..."
@@ -158,12 +163,7 @@ increase_version (){
             fi
         fi
      fi
-     BUMPVERSION=$(pip freeze | grep bumpversion)
 
-     if [ -z $BUMPVERSION ]; then
-        echo "No bumpversion package found. Please install bumpversion run 'pip install bumpversion' "
-        return 1
-     fi
      cd "$WORKSPACE_DIR"
      echo "Increasing version..."
      if [ -z "$VERBOSE" ]; then
@@ -177,13 +177,13 @@ increase_version (){
         rm ${CONFIG_FILE}
      else
         if [[ ! -f $HOME/$(basename ${CONFIG_FILE}) ]]; then
-            mv ${CONFIG_FILE} ${HOME}
+            mv -v ${CONFIG_FILE} ${WORKSPACE_DIR}
         fi
      fi
      cd ${OLDPWD}
 
      if [ ! -z  ${TEMPDIR}  ]; then
-        echo "Cleaning up..."
+        echo "Cleaning up... $TEMPDIR"
         rm -rf ${TEMPDIR}
      fi
   fi
