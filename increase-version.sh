@@ -18,9 +18,8 @@ increase_version (){
     }
 
     usage(){
-        echo "usage:
-                  increase_version [-p](major|minor|patch) [-t|-m] [-vhr] [-w] WORKSPACE_DIR [-c] CONFIG_FILE PROJECT_NAME
-                  increase_version -g PROJECT_NAME
+        echo "usage: increase_version [-p](major|minor|patch) [-t|-m] [-vhr] [-w] WORKSPACE_DIR [-c] CONFIG_FILE PROJECT_NAME
+                     increase_version -g PROJECT_NAME
               "
         echo "options: "
         echo "      -p : Specify the version part to bump i.e (minor| major| patch)."
