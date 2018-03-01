@@ -101,9 +101,9 @@ increase_version (){
   fi
 
   if [[ -d "$WORKSPACE_DIR" ]];then
-      if [[ ! -z ${GET_VERSION}  ]]; then
+      if [[ ! -z ${GET_VERSION} && -f $SETUP_FILE ]]; then
           echo "Getting current version..."
-          CURRENT_VERSION=$(sed -n "s/.*version='//p" "$WORKSPACE_DIR/setup.py" | sed -n "s/[',\"]*//gp" | xargs)
+          CURRENT_VERSION=$(sed -n "s/.*version='//p" "$SETUP_FILE" | sed -n "s/[',\"]*//gp" | xargs)
           echo "Project: $PROJECT_NAME"
           echo "Workspace dir: $WORKSPACE_DIR"
           echo "Current local version: $CURRENT_VERSION"
@@ -111,6 +111,7 @@ increase_version (){
       else
          echo "Project name: $PROJECT_NAME"
          echo "Workspace dir: $WORKSPACE_DIR"
+         return 1
       fi
   fi
 
