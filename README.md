@@ -12,7 +12,7 @@
 
 The script provides a detailed output of the files changed and the expected commit message which can be modified by changing the `.bumpversiontemplate.cfg` file. 
 
-All new templates are created using the `.bumpversiontemplate.cfg` so changes made to the file will reflect in a projects you use this script.
+All new templates are created using the `.bumpversiontemplate.cfg` so changes made to the file will reflect in all projects you use the script.
 
 
 ## Install:
