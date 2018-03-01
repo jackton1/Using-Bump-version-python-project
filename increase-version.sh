@@ -18,16 +18,20 @@ increase_version (){
     }
 
     usage(){
-        echo "usage: increase_version [-p](major|minor|patch) [-t|-m]
-                     [-vr] [-w] WORKSPACE_DIR [-c] CONFIG_FILE PROJECT_NAME"
+        echo "usage:
+                  increase_version [-p](major|minor|patch) [-t|-m] [-vhr] [-w] WORKSPACE_DIR [-c] CONFIG_FILE PROJECT_NAME
+                  increase_version -g PROJECT_NAME
+              "
         echo "optional arguments: "
+        echo "      -p : Specify the version part to bump i.e (minor| major| patch)."
+        echo "      -t : Performs a test run without changes shows a verbose output by default."
+        echo "      -m : Perform an actual run bumping the project version. Run with -v for more information."
+        echo "      -v : Verbose option to show more information about the performed operation."
         echo "      -h : Displays the help message."
-        echo "      -t : Performs a test run without changes uses -v by default."
-        echo "      -m : Perform an actual run upgrading the project version. Best run with -v"
-        echo "      -w : Specify path to workspace directory"
-        echo "      -c : Specify path to the config file"
-        echo "      -r : Remove config file after run."
-        echo "      -g : Get the project current version. 'increase_version -g PROJECT_NAME' "
+        echo "      -r : Remove project generated config file after run."
+        echo "      -w : Specify path to workspace/project directory."
+        echo "      -c : Specify path to another config template defualts to '.bumpversiontemplate.cfg'."
+        echo "      -g : Retrieves the project's current version."
     }
 
     while getopts 'tmrghp:c:w:v' flag; do
