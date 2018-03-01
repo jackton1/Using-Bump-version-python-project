@@ -158,6 +158,12 @@ increase_version (){
             fi
         fi
      fi
+     BUMPVERSION=$(pip freeze | grep bumpversion)
+
+     if [ -z $BUMPVERSION ]; then
+        echo "No bumpversion package found. Please install bumpversion run 'pip install bumpversion' "
+        return 1
+     fi
      cd "$WORKSPACE_DIR"
      echo "Increasing version..."
      if [ -z "$VERBOSE" ]; then
