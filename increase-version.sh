@@ -83,7 +83,7 @@ increase_version (){
   if [ ! -d "$WORKSPACE_DIR" ]; then
      echo "No workspace directory exist at: $WORKSPACE_DIR"
   else
-     echo "The project name is ...$PROJECT_NAME and the workspace location is $WORKSPACE_DIR..."
+     echo "The project name is '$PROJECT_NAME' and the workspace location is: $WORKSPACE_DIR"
      MAINLINE_DIR="$WORKSPACE_DIR/mainline"
      SETUP_FILE=$(find "$WORKSPACE_DIR" -depth 1 -type f -name 'setup.py' 2>/dev/null)
      if [ -z $SETUP_FILE ]; then
