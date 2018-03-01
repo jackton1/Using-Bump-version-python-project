@@ -1,25 +1,26 @@
 #!/bin/bash
 
 increase_version (){
-
-    unset WORKSPACE_DIR
-    unset PROJECT_NAME
-    unset SETUP_FILE
-    unset CONFIG_FILE
-    unset PART
-    unset REMOVE_CONFIG
-    unset ARGS
-    unset GET_VERSION
-    unset VERBOSE
-    unset CURRENT_VERSION
+    PROJECT_NAME=
+    GET_VERSION=
+    ARGS=
+    VERBOSE=
+    REMOVE_CONFIG=
+    PART=
+    CONFIG_FILE=
+    SETUP_FILE=
+    PROJECT_NAME=
+    CURRENT_VERSION=
+    WORKSPACE_DIR=
 
     version() {
         echo "$@" | awk -F. '{ if($1 <= 0) $1=$1+1; printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }';
     }
 
     usage(){
-        echo "usage: increase_version [-p](major|minor|patch) [-t|-m] [-vhr] [-w] WORKSPACE_DIR [-c] CONFIG_FILE PROJECT_NAME
-                     increase_version -g PROJECT_NAME
+        echo "usage:
+        increase_version [-p](major|minor|patch) [-t|-m] [-vhr] [-w] WORKSPACE_DIR [-c] CONFIG_FILE PROJECT_NAME
+        increase_version -g PROJECT_NAME
               "
         echo "options: "
         echo "      -p : Specify the version part to bump i.e (minor| major| patch)."
@@ -63,12 +64,15 @@ increase_version (){
     PROJECT_NAME="${@:${#@}}"
     WORKSPACE_DIR="$HOME/workspace/$PROJECT_NAME"
   fi
+
+
   if [[ ! -z "$PART" ]]; then
     case "${PART}" in
         minor|major|patch) echo "Changing $PART version.";;
         *) echo "Invalid version part specified: (major|minor|patch)."; return 1;;
     esac
   fi
+
   SEPARATOR="'"
 
   if [[ ! -z "$CONFIG_FILE" && ! -f "$CONFIG_FILE" ]]; then
@@ -76,15 +80,16 @@ increase_version (){
     return 1
   fi
 
-  if [[ ! -d "$WORKSPACE_DIR" ]]; then
+  if [ ! -d "$WORKSPACE_DIR" ]; then
      echo "No workspace directory exist at: $WORKSPACE_DIR"
   else
+     echo "The project name is ...$PROJECT_NAME and the workspace location is $WORKSPACE_DIR..."
      MAINLINE_DIR="$WORKSPACE_DIR/mainline"
-     SETUP_FILE=$(find "$WORKSPACE_DIR" -type f -name 'setup.py' 2>/dev/null)
-     if [[ $? -ne 0 ]]; then
+     SETUP_FILE=$(find "$WORKSPACE_DIR" -depth 1 -type f -name 'setup.py' 2>/dev/null)
+     if [ -z $SETUP_FILE ]; then
        echo "No setup.py file not found in: $WORKSPACE_DIR"
-       echo "Checking mainline directory : $MAINLINE_DIR"
-       SETUP_FILE=$(find "$MAINLINE_DIR" -type f -name 'setup.py' 2>/dev/null)
+       echo "Checking mainline directory: $MAINLINE_DIR"
+       SETUP_FILE=$(find "$MAINLINE_DIR"  -depth 1 -type f -name 'setup.py' 2>/dev/null)
        if [[ $? -ne 0 ]]; then
           echo "Cannot find setup.py file in $WORKSPACE_DIR or $MAINLINE_DIR."
           return 1
@@ -96,10 +101,9 @@ increase_version (){
   fi
 
   if [[ -d "$WORKSPACE_DIR" ]];then
-
       if [[ ! -z ${GET_VERSION}  ]]; then
           echo "Getting current version..."
-          CURRENT_VERSION=$(sed -n "s/.*version=//p" "$WORKSPACE_DIR/setup.py" | sed -n "s/[',\"]*//gp" | xargs)
+          CURRENT_VERSION=$(sed -n "s/.*version='//p" "$WORKSPACE_DIR/setup.py" | sed -n "s/[',\"]*//gp" | xargs)
           echo "Project: $PROJECT_NAME"
           echo "Workspace dir: $WORKSPACE_DIR"
           echo "Current local version: $CURRENT_VERSION"
