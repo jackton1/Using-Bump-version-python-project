@@ -176,7 +176,7 @@ increase_version (){
         echo "Cleaning up $CONFIG_FILE."
         rm ${CONFIG_FILE}
      else
-        if [[ ! -f $HOME/$(basename ${CONFIG_FILE}) ]]; then
+        if [[ ! -f ${CONFIG_FILE} ]]; then
             mv -v ${CONFIG_FILE} ${WORKSPACE_DIR}
         fi
      fi
