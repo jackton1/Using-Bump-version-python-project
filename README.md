@@ -7,6 +7,30 @@ and the expected commit message which can be modified by changing the
 `.bumpversiontemplate.cfg` file.
 
 
+
+## Install:
+
+#### Download or clone the repository.
+
+```
+$ git clone https://github.com/jackton1/bumpversion-template.git
+```
+
+##### Run 
+```
+$ chmod +x /path/to/increase-version.sh
+```
+
+##### Add line to ``~/.bashrc`` or ``~/.zshrc``
+```alias increase_version=/path/to/increase-version.sh```
+
+#### OR
+
+ ```
+ $ source /path/to/increase-version.sh
+ ```
+
+
 ### Increases the project version according to the part(major|minor|patch)
 #### patch
 ```1.1.1. --> 1.1.2```
@@ -15,19 +39,6 @@ and the expected commit message which can be modified by changing the
 #### major
 ```1.1.1. --> 2.0.0```
 
-
-## Installation:
-
-#### Download or clone the repository.
-
-##### Run ``chmod +x /path/to/increase-version.sh``
-
-##### Add line to ``~/.bashrc`` or ``~/.zshrc``
-```alias increase_version=/path/to/increase-version.sh```
-
-#### OR
-
- ```source /path/to/increase-version.sh```
 
 ## Usage:
 #### View Help Text
