@@ -111,7 +111,6 @@ increase_version (){
       else
          echo "Project name: $PROJECT_NAME"
          echo "Workspace dir: $WORKSPACE_DIR"
-         return 1
       fi
   fi
 
