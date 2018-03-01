@@ -1,7 +1,8 @@
 # Using [bumpversion](https://pypi.python.org/pypi/bumpversion) in your python project to modify project version.
 
-### Which changes the `setup.py` file and creates a commit on the current VCS (ie. Mecurail/Git).
 ### Generating `.bumpversion.cfg` file for each project can be a repetitive task that this project aims to simplify that task.
+
+[bumpversion](https://pypi.python.org/pypi/bumpversion) changes the `setup.py` file and creates a commit on the current VCS (ie. Mecurail/Git)
 
 > With a few commands your project configuration should be dynamically created.
 - creating sample `.bumpversion.cfg` template in the project folder
