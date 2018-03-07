@@ -20,7 +20,7 @@ All new templates are created using the `.bumpversiontemplate.cfg` so changes ma
 #### Download or clone the repository.
 
 ```
-$ git clone https://github.com/jackton1/bumpversion-template.git
+$ git clone https://github.com/jackton1/bumpversion-config-generator.git
 ```
 
 ##### Add execute permission if required. 
