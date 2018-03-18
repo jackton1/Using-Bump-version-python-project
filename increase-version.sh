@@ -12,6 +12,7 @@ increase_version (){
     PROJECT_NAME=
     CURRENT_VERSION=
     WORKSPACE_DIR=
+    DESTINATION=
 
     version() {
         echo "$@" | awk -F. '{ if($1 <= 0) $1=$1+1; printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }';
@@ -116,8 +117,8 @@ increase_version (){
 
   if [[ ! -z "$PROJECT_NAME" && -d "$WORKSPACE_DIR" ]];then
      echo "Starting bumpversion..."
-     CURRENT_VERSION=$(sed -n "s/.*version=//p" "$WORKSPACE_DIR/setup.py" | sed -n "s/[',\"]*//gp" | xargs)
-     SEPARATOR=$(sed -n "s/.*version=//p" "$WORKSPACE_DIR/setup.py" | cut -d . -f 1 | cut -c 1 )
+     CURRENT_VERSION=$(sed -n "s/[^\s]version='//p" "$WORKSPACE_DIR/setup.py" | sed -n "s/[',\"]*//gp" | xargs)
+     SEPARATOR=$(sed -n "s/[^\s]version='//p" "$WORKSPACE_DIR/setup.py" | cut -d . -f 1 | cut -c 1 )
      if [ -z ${CONFIG_FILE} ]; then
         echo "Getting config file..."
         CONFIG_FILE="$WORKSPACE_DIR/.bumpversion.cfg"
@@ -144,7 +145,7 @@ increase_version (){
      fi
 
      if [[ ! -z ${CONFIG_FILE} && ! -z ${CURRENT_VERSION} ]]; then
-        if [[ ! -f  ${CONFIG_FILE} ||  $(wc -c <"$CONFIG_FILE") -lt 160 ]]; then
+        if [[ ! -f  ${CONFIG_FILE} ||  $(wc -c < "$CONFIG_FILE") -lt 160 ]]; then
             echo "Generating config file Please wait..."
             SOURCE_TEMPLATE=$(find $HOME -name ".bumpversiontemplate.cfg" 2>/dev/null)
             if [ -z ${SOURCE_TEMPLATE} ]; then
@@ -166,6 +167,7 @@ increase_version (){
 
      cd "$WORKSPACE_DIR"
      echo "Increasing version..."
+     echo "Using config file: $CONFIG_FILE "
      if [ -z "$VERBOSE" ]; then
         bumpversion "--allow-dirty" "${ARGS}" "--config-file" "$CONFIG_FILE" "${PART}" "$SETUP_FILE"
      else
@@ -176,12 +178,12 @@ increase_version (){
         echo "Cleaning up $CONFIG_FILE."
         rm ${CONFIG_FILE}
      else
-        if [[ ! -f ${CONFIG_FILE} ]]; then
-            mv -v ${CONFIG_FILE} ${WORKSPACE_DIR}
+        DESTINATION=$WORKSPACE_DIR/$(basename $CONFIG_FILE)
+        if [[ ! -f ${DESTINATION} ]]; then
+            mv -v ${CONFIG_FILE} ${DESTINATION}
         fi
      fi
      cd ${OLDPWD}
-
      if [ ! -z  ${TEMPDIR}  ]; then
         echo "Cleaning up... $TEMPDIR"
         rm -rf ${TEMPDIR}
