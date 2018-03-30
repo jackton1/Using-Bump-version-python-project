@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 increase_version (){
     PROJECT_NAME=
     GET_VERSION=
